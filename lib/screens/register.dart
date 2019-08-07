@@ -7,6 +7,8 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   // Explicit
+  final formKey = GlobalKey<FormState>();
+  String nameString, emaiString, passwordString;
 
   // Method
   Widget nameText() {
@@ -19,14 +21,22 @@ class _RegisterState extends State<Register> {
         ),
         labelText: 'Name :',
         labelStyle: TextStyle(color: Colors.green),
-        helperText: 'Type Your Name',helperStyle: TextStyle(color: Colors.yellow[700]),
+        helperText: 'Type Your Name',
+        helperStyle: TextStyle(color: Colors.yellow[700]),
         hintText: 'English only',
-      ),
+      ),validator: (String value){
+        if (value.isEmpty) {
+          return 'Please Fill Name in Blank';
+        }
+      },onSaved: (String value){
+        nameString = value;
+      },
     );
   }
 
   Widget emailText() {
-    return TextFormField(keyboardType: TextInputType.emailAddress,
+    return TextFormField(
+      keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
         icon: Icon(
           Icons.email,
@@ -35,9 +45,16 @@ class _RegisterState extends State<Register> {
         ),
         labelText: 'Email :',
         labelStyle: TextStyle(color: Colors.blue),
-        helperText: 'Type Your Email',helperStyle: TextStyle(color: Colors.yellow[700]),
+        helperText: 'Type Your Email',
+        helperStyle: TextStyle(color: Colors.yellow[700]),
         hintText: 'you@email.com',
-      ),
+      ),validator: (String value){
+        if (!((value.contains('@')) && (value.contains('.')))) {
+          return 'Please keep Format Email';
+        }
+      },onSaved: (String value){
+        emaiString = value;
+      },
     );
   }
 
@@ -51,20 +68,30 @@ class _RegisterState extends State<Register> {
         ),
         labelText: 'Password :',
         labelStyle: TextStyle(color: Colors.red),
-        helperText: 'Type Your Password',helperStyle: TextStyle(color: Colors.yellow[700]),
+        helperText: 'Type Your Password',
+        helperStyle: TextStyle(color: Colors.yellow[700]),
         hintText: 'More 6 Charactor',
-      ),
+      ),validator: (String value){
+        if (value.length < 6) {
+          return 'Password More 6 Charactor';
+        }
+      },onSaved: (String value){
+        passwordString = value;
+      },
     );
   }
 
   Widget groupText() {
-    return ListView(
-      padding: EdgeInsets.only(top: 50.0, left: 50.0, right: 50.0),
-      children: <Widget>[
-        nameText(),
-        emailText(),
-        passwordText(),
-      ],
+    return Form(
+      key: formKey,
+      child: ListView(
+        padding: EdgeInsets.only(top: 50.0, left: 50.0, right: 50.0),
+        children: <Widget>[
+          nameText(),
+          emailText(),
+          passwordText(),
+        ],
+      ),
     );
   }
 
@@ -72,7 +99,14 @@ class _RegisterState extends State<Register> {
     return IconButton(
       tooltip: 'Register Firebase',
       icon: Icon(Icons.cloud_upload),
-      onPressed: () {},
+      onPressed: () {
+        
+        if (formKey.currentState.validate()) {
+          formKey.currentState.save();
+          print('name = $nameString, email = $emaiString, password = $passwordString');
+        }
+
+      },
     );
   }
 
